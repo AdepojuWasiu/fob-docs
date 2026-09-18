@@ -128,7 +128,7 @@ const FormStepOne = ({ onNext }: FormStepOneProps) => {
            onSubmit={handleSubmit(onSubmit)}>
             {/* employee personal details */}
             <div className="w-full flex flex-col gap-5">
-                <h2 className="text-[15px] text-center">
+                <h2 className="text-[15px] text-center font-semibold">
                   PERSONAL DETAILS
                 </h2>
 
@@ -251,7 +251,7 @@ const FormStepOne = ({ onNext }: FormStepOneProps) => {
             
             {/* guarantor personal information */}
             <div className="w-full flex flex-col gap-5">
-                <h2 className="text-[15px] text-center">
+                <h2 className="text-[15px] text-center font-semibold">
                   CONTACT DETAILS
                 </h2>
 
@@ -323,7 +323,7 @@ const FormStepOne = ({ onNext }: FormStepOneProps) => {
             </div>
 
             <div className="w-full flex flex-col gap-5">
-                <h2 className="text-[15px] text-center">
+                <h2 className="text-[15px] text-center font-semibold">
                   NEXT OF KIN DETAILS
                 </h2>
 

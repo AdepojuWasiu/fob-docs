@@ -109,7 +109,7 @@ const GuarantorForm = () => {
                 onSubmit={handleSubmit(onSubmit)}>
             {/* employee personal information (bearer) */}
             <div className="w-full flex flex-col gap-5">
-                <h2 className="text-[15px] text-center">
+                <h2 className="text-[15px] text-center font-semibold">
                   EMPLOYEES PERSONAL INFORMATION (BEARER)
                 </h2>
 
@@ -166,7 +166,7 @@ const GuarantorForm = () => {
             
             {/* guarantor personal information */}
             <div className="w-full flex flex-col gap-5">
-                <h2 className="text-[15px] text-center">
+                <h2 className="text-[15px] text-center font-semibold">
                   GUARANTOR’S PERSONAL INFORMATION
                 </h2>
 
@@ -301,7 +301,7 @@ const GuarantorForm = () => {
             </div>
 
            <div className="w-full flex flex-col gap-5">
-                <h2 className="text-[15px] text-center">
+                <h2 className="text-[15px] text-center font-semibold">
                   GUARANTOR’S HOME ADDRESS INFORMATION
                 </h2>
 
@@ -342,7 +342,7 @@ const GuarantorForm = () => {
             </div>
 
            <div className="w-full flex flex-col gap-5">
-                <h2 className="text-[15px] text-center">
+                <h2 className="text-[15px] text-center font-semibold">
                   GUARANTOR’S OFFICE ADDRESS INFORMATION
                 </h2>
 

@@ -127,7 +127,7 @@ const FormStepTwo = ({ onPrevious }: FormStepTwoProps) => {
            onSubmit={handleSubmit(onSubmit)}>
             {/* employee personal information (bearer) */}
             <div className="w-full flex flex-col gap-5">
-                <h2 className="text-[15px] text-center">
+                <h2 className="text-[15px] text-center font-semibold">
                   PENSION DETAILS
                 </h2>
 
@@ -212,7 +212,7 @@ const FormStepTwo = ({ onPrevious }: FormStepTwoProps) => {
 
 
            <div className="w-full flex flex-col gap-5">
-                <h2 className="text-[15px] text-center">
+                <h2 className="text-[15px] text-center font-semibold">
                   HEALTH INFORMATION
                 </h2>
 
@@ -233,7 +233,7 @@ const FormStepTwo = ({ onPrevious }: FormStepTwoProps) => {
             </div>
 
             <div className="w-full flex flex-col gap-5">
-                <h2 className="text-[15px] text-center">
+                <h2 className="text-[15px] text-center font-semibold">
                   UPLOAD DOCUMENTS
                 </h2>
 
