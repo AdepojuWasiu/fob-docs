@@ -310,7 +310,7 @@ export function RecordsPage(
     <>
         <PageHeading 
           eyebrow="Records" 
-          title={`${kind === "employees" ? "Employee" : "Guarantor"} directory`} 
+          title={`${kind === "employees" ? "Employee Bio Data" : "Guarantors Submissions"}`} 
           description={`Search, review and manage every ${kind === "employees" ? "employee bio data" : "guarantor submission"} in your workspace.`}
           action={
             <button className="inline-flex items-center gap-2 rounded-xl border border-[#D9E8EE] bg-white px-4 py-3 text-sm font-semibold text-[#527184]">
