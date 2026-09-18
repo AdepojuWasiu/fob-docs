@@ -161,7 +161,7 @@ const FormStepTwo = ({ onPrevious }: FormStepTwoProps) => {
             
             {/* guarantor personal information */}
             <div className="w-full flex flex-col gap-5">
-                <h2 className="text-[15px] text-center">
+                <h2 className="text-[15px] text-center font-semibold">
                   PERSONAL BANK DETAILS
                 </h2>
 
