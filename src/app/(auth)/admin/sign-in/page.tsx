@@ -38,13 +38,13 @@ const SignIn = () => {
   
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F2F8FB] py-[50px]">
+    <div className="min-h-screen flex items-center justify-center bg-[#F2F8FB] px-3 py-6 sm:px-5 sm:py-10">
      {loading && (
         <ModalLayout setModal={setLoading} addclas="w-fit">
           <Loader title="processing" />
         </ModalLayout>
       )}
-      <div className="w-full max-w-[674px] bg-white px-[2.5vw] py-[40px] flex flex-col
+      <div className="w-full max-w-[674px] bg-white px-4 py-6 sm:px-6 sm:py-10 flex flex-col
                       items-center justify-center gap-[8px] rounded-[12px]"> 
 
           <Image 
@@ -54,10 +54,7 @@ const SignIn = () => {
               height={200}
             />
 
-          <h2 className="text-[28px] font-semibold">
-            Sign In To Admin Dashboard
-          </h2>
-          <p className="text-center text-[#4B4B4B] px-[30px]" >
+          <p className="text-center text-[#4B4B4B] px-[30px] mt-4" >
             Enter Admin credentials to access dashboard.
           </p>
 

@@ -61,10 +61,10 @@ export default function AdminDetailPage({ kind, record }: { kind: RecordKind; re
             <span className={`rounded-full px-3 py-1 text-[11px] font-semibold ${statusStyles[record.status]}`}>{record.status}</span>
             <span className="text-xs text-[#91A5B1]">{record.id}</span>
           </div>
-          <h1 className="text-[30px] font-bold tracking-[-0.03em]">{record.name}</h1>
-          <p className="mt-2 text-sm text-[#7891A0]">{record.role} · {record.department} · submitted {record.submittedAt}</p>
+          <h1 className="break-words text-2xl font-bold tracking-[-0.03em] sm:text-[30px]">{record.name}</h1>
+          <p className="mt-2 break-words text-sm text-[#7891A0]">{record.role} · {record.department} · submitted {record.submittedAt}</p>
         </div>
-        <button onClick={downloadAll} disabled={downloading} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#00B0F0] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(0,176,240,0.2)] disabled:opacity-60">
+        <button onClick={downloadAll} disabled={downloading} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#00B0F0] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(0,176,240,0.2)] disabled:opacity-60 md:w-auto">
           <Download size={17} />{downloading ? "Preparing ZIP..." : "Download all files"}
         </button>
       </div>

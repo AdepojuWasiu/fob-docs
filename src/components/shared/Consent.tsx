@@ -11,14 +11,14 @@ const ConsentModal = ({
   onReject,
 }: ConsentModalProps) => {
   return (
-    <div className="md:w-[45vw] w-[90vw] bg-white rounded-lg flex flex-col">
+    <div className="w-[calc(100vw-2rem)] max-w-[680px] bg-white rounded-lg flex flex-col">
       <div className="w-full flex justify-center p-4 border-b border-gray-200">
-        <h2 className="text-2xl">
+        <h2 className="text-center text-xl sm:text-2xl">
           Consent for Personal Data Collection
         </h2>
       </div>
 
-      <div className="flex flex-col gap-4 py-6 px-8">
+      <div className="flex flex-col gap-4 px-4 py-5 sm:px-8 sm:py-6">
         <div className="flex flex-col gap-4">
           <p className="text-gray-700 text-md">
             The Company recognizes the confidential nature of the Personal
@@ -34,7 +34,7 @@ const ConsentModal = ({
           </p>
         </div>
 
-        <div className="flex gap-6 px-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-6 sm:px-8">
           <button
             type="button"
             onClick={onAccept}

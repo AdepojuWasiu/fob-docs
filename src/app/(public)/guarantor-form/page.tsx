@@ -55,7 +55,7 @@ const GuarantorForm = () => {
   })
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F2F8FB] py-[50px]">
+    <div className="min-h-screen flex items-center justify-center bg-[#F2F8FB] px-3 py-6 sm:px-5 sm:py-10">
       {loading && (
         <ModalLayout setModal={setLoading} addclas="w-fit">
           <Loader title="processing" />
@@ -91,7 +91,7 @@ const GuarantorForm = () => {
           />
         </ModalLayoutPopUp> 
       )}
-      <div className="w-full max-w-[674px] bg-white px-[2.5vw] py-[40px] flex flex-col items-center justify-center gap-5 rounded-[12px]"> 
+      <div className="w-full max-w-[674px] bg-white px-4 py-6 sm:px-6 sm:py-10 flex flex-col items-center justify-center gap-5 rounded-[12px]">
 
           <Image 
             src="/fob-image.png"
