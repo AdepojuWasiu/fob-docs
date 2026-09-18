@@ -55,7 +55,7 @@ const SignIn = () => {
             />
 
           <h2 className="text-[28px] font-semibold">
-            Sign in to Admin Dashboard
+            Sign In To Admin Dashboard
           </h2>
           <p className="text-center text-[#4B4B4B] px-[30px]" >
             Enter Admin credentials to access dashboard.
