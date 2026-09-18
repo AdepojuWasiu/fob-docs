@@ -78,6 +78,7 @@ const FormStepOne = ({ onNext }: FormStepOneProps) => {
     {label: "Commercial", value: "commercial"},
     {label: "Corporate Services", value: "corporate_services"},
     {label: "Finance", value: "finance"},
+    {label: "Customer Experience", value: "customer_experience"},
     {label: "Internal Audit, Risk and BPSQ", value: "Internal_audit_risk_bpsq"},
     {label: "Regulatory and Public Relations", value: "regulatory_Public_relations"},
     {label: "Technology", value: "technology"}
@@ -206,6 +207,7 @@ const FormStepOne = ({ onNext }: FormStepOneProps) => {
                     { label: "Full-Time Employee", value: "full_time" },
                     { label: "Contract", value: "contract" },
                     { label: "Intern", value: "intern" },
+                    { label: "FOTA", value: "fota" }, 
                     { label: "Apprentice", value: "apperentice" },
                   ]}
                   {...register("employmentType")}
