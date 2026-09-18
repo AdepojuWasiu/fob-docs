@@ -56,7 +56,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       </select>
 
       {error && (
-        <p className="text-xs text-red-500">
+        <p className="text-sm text-red-500">
           {error}
         </p>
       )}

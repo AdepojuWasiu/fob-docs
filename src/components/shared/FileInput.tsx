@@ -165,7 +165,7 @@ const FileInput = ({
 
       {/* Error */}
       {error && (
-        <p className="text-xs text-red-500">
+        <p className="text-sm text-red-500">
           {error}
         </p>
       )}
