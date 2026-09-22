@@ -4,14 +4,27 @@ import { checkR2Object, deleteR2Object, getR2Url } from "@/lib/r2";
 import { getR2ObjectBuffer } from "@/lib/r2-download";
 import { uploadBufferToR2 } from "@/lib/r2-upload-server";
 import { generateGuarantorPdf } from "@/lib/generate-guarantor-pdf";
+import { markSubmissionFailed } from "@/lib/mark-submission-failed";
 
 export async function POST(request: NextRequest) {
   const createdKeys: string[] = [];
+  let submissionId: string | undefined;
 
   try {
-    const { submissionId } = await request.json();
+    const body = await request.json();
+    submissionId = body.submissionId;
+
+    if (!submissionId) {
+      return NextResponse.json(
+        { success: false, message: "Submission ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const validSubmissionId = submissionId;
+
     const submission = await prisma.submission.findUnique({
-      where: { id: submissionId },
+      where: { id: validSubmissionId },
       include: { guarantor: true, documents: true },
     });
 
@@ -55,7 +68,7 @@ export async function POST(request: NextRequest) {
     await prisma.$transaction(async (tx) => {
       await tx.document.create({
         data: {
-          submissionId,
+          submissionId: validSubmissionId,
           type: "GENERATED_GUARANTOR_PDF",
           fileName: "guarantor-form.pdf",
           originalName: "guarantor-form.pdf",
@@ -66,12 +79,18 @@ export async function POST(request: NextRequest) {
           status: "VERIFIED",
         },
       });
-      await tx.submission.update({ where: { id: submissionId }, data: { status: "SUBMITTED" } });
+      await tx.submission.update({ where: { id: validSubmissionId }, data: { status: "SUBMITTED" } });
     });
 
     return NextResponse.json({ success: true, message: "Guarantor submission completed" });
   } catch (error) {
     console.error("Finalize guarantor error:", error);
+    await markSubmissionFailed(
+      submissionId,
+      error instanceof Error
+        ? error.message
+        : "Unable to finalize guarantor submission"
+    );
     for (const key of createdKeys) {
       try {
         await deleteR2Object(key);

@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = ["image/jpeg", "image/png", "application/pdf", "image/jpg"];
+const ACCEPTED_FILE_TYPES_PHOTO = ["image/jpeg", "image/png", "image/jpg"];
 
 const fileArray = z
   .array(z.instanceof(File))
@@ -15,6 +16,14 @@ const fileArrayMultiple = z
   .refine(files => files.length > 0, "This file is required") 
   .refine(files => files.every(f => ACCEPTED_FILE_TYPES.includes(f.type)), "Only .jpg, .png, and .pdf files are allowed")
   .refine(files => files.every(f => f.size <= MAX_FILE_SIZE), "File size must not exceed 5MB");
+
+const fileArrayPhoto = z
+  .array(z.instanceof(File))
+  .refine(files => files.length > 0, "This file is required") 
+  .max(1, "Only one file is allowed")
+  .refine(files => files.every(f => ACCEPTED_FILE_TYPES_PHOTO.includes(f.type)), "Only .jpg, .png files are allowed")
+  .refine(files => files.every(f => f.size <= MAX_FILE_SIZE), "File size must not exceed 5MB");
+
 
 export const employeeFormTwoSchema = z.object({
     pfaName: z.string().min(1, "PFA Name is required"),
@@ -31,7 +40,7 @@ export const employeeFormTwoSchema = z.object({
     sicknessCheckBox: z.boolean().refine((val) => val === true, {
       message: "You must agree with this claim",
     }),
-    picture: fileArray,
+    picture: fileArrayPhoto,
     academicCertificate: fileArray,
     nyscCertificate: fileArray,
     birthCertificate: fileArray,

@@ -60,6 +60,8 @@ model Submission {
   employee  Employee?
   guarantor Guarantor?
 
+  failedReason String?
+
   documents Document[]
 
   createdAt DateTime @default(now())

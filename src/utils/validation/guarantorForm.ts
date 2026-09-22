@@ -2,13 +2,21 @@ import { z } from "zod";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = ["image/jpeg", "image/png", "application/pdf", "image/jpg"];
-
+const ACCEPTED_FILE_TYPES_PHOTO = ["image/jpeg", "image/png", "image/jpg"];
 const fileArray = z
   .array(z.instanceof(File))
   .refine(files => files.length > 0, "This file is required") 
   .max(1, "Only one file is allowed")
   .refine(files => files.every(f => ACCEPTED_FILE_TYPES.includes(f.type)), "Only .jpg, .png, and .pdf files are allowed")
   .refine(files => files.every(f => f.size <= MAX_FILE_SIZE), "File size must not exceed 5MB");
+
+  const fileArrayPhoto = z
+  .array(z.instanceof(File))
+  .refine(files => files.length > 0, "This file is required") 
+  .max(1, "Only one file is allowed")
+  .refine(files => files.every(f => ACCEPTED_FILE_TYPES_PHOTO.includes(f.type)), "Only .jpg, .png files are allowed")
+  .refine(files => files.every(f => f.size <= MAX_FILE_SIZE), "File size must not exceed 5MB");
+
 
 export const guarantorFormSchema = z.object({
     employeeName: z.string().min(1, "Employee Name is required"),
@@ -17,7 +25,7 @@ export const guarantorFormSchema = z.object({
     relationship: z.string().min(1, "Relationship With Employee is required"),
     yearsOfRelationship: z.string().min(1, "Select years of relationship with employee"),
     validID: fileArray,
-    picture: fileArray,
+    picture: fileArrayPhoto,
     firstName: z.string().min(1, "First Name is required"),
     surname: z.string().min(1, "Surname is required"),
     otherName: z.string().min(1, "Other Name is required"),

@@ -7,9 +7,10 @@ import { AdminDocument, AdminRecord, RecordKind } from "@/lib/admin-data";
 import { getCompleteDocuments, getDetailSections } from "@/components/admin/AdminPages";
 
 const statusStyles: Record<AdminRecord["status"], string> = {
-  Verified: "bg-[#EAF8F0] text-[#258253]",
-  Pending: "bg-[#FFF6DE] text-[#A06B00]",
-  Review: "bg-[#FFF0EE] text-[#C45B4E]",
+  DRAFT: "bg-[#FFF6DE] text-[#A06B00]",
+  UPLOADING: "bg-[#E9F8FD] text-[#008FC4]",
+  SUBMITTED: "bg-[#EAF8F0] text-[#258253]",
+  FAILED: "bg-[#FFF0EE] text-[#C45B4E]",
 };
 
 const kindLabel = (kind: RecordKind) => kind === "employees" ? "employees" : "guarantors";
@@ -18,10 +19,12 @@ function FileIcon({ type }: { type: AdminDocument["type"] }) {
   return type === "image" ? <ImageIcon size={19} /> : <FileText size={19} />;
 }
 
+const previewUrl = (url: string) => `${url}${url.includes("?") ? "&" : "?"}inline=1`;
+
 export default function AdminDetailPage({ kind, record }: { kind: RecordKind; record: AdminRecord }) {
   const [preview, setPreview] = useState<AdminDocument | null>(null);
   const [downloading, setDownloading] = useState(false);
-  const documents = getCompleteDocuments(kind, record);
+  const documents = getCompleteDocuments(record);
   const sections = getDetailSections(kind, record);
 
   const downloadFile = (file: AdminDocument) => {
@@ -61,11 +64,12 @@ export default function AdminDetailPage({ kind, record }: { kind: RecordKind; re
           <div className="mb-3 flex items-center gap-2">
             <span className={`rounded-full px-3 py-1 text-[11px] font-semibold ${statusStyles[record.status]}`}>{record.status}</span>
             <span className="text-xs text-[#91A5B1]">{record.id}</span>
+            <span>{record.status === "FAILED" ? record.failedReason : null}</span>
           </div>
           <h1 className="break-words text-2xl font-bold tracking-[-0.03em] sm:text-[30px]">{record.name}</h1>
           <p className="mt-2 break-words text-sm text-[#7891A0]">{record.role} · {record.department} · submitted {record.submittedAt}</p>
         </div>
-        <button onClick={downloadAll} disabled={downloading} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#00B0F0] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(0,176,240,0.2)] disabled:opacity-60 md:w-auto">
+        <button onClick={downloadAll} disabled={downloading} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#00B0F0] px-4 py-3 text-sm font-semibold text-white shadow-[0_8px_18px_rgba(0,176,240,0.2)] disabled:opacity-60 md:w-auto cursor-pointer">
           <Download size={17} />{downloading ? "Preparing ZIP..." : "Download all files"}
         </button>
       </div>
@@ -87,6 +91,11 @@ export default function AdminDetailPage({ kind, record }: { kind: RecordKind; re
                     </div>
                   ))}
                 </div>
+                {record.status === "FAILED" && record.failedReason && (
+                  <p className="mt-3 max-w-2xl rounded-lg bg-[#FFF0EE] px-3 py-2 text-sm text-[#C45B4E]">
+                    Failure reason: {record.failedReason}
+                  </p>
+                )}
               </div>
             ))}
           </div>
@@ -126,13 +135,9 @@ export default function AdminDetailPage({ kind, record }: { kind: RecordKind; re
             </div>
             <div className="flex min-h-[300px] items-center justify-center bg-[#F2F8FB] p-8">
                 {
-                preview.type === "image" && preview.url.startsWith("/") ? 
-                <img src={preview.url} alt={preview.name} className="max-h-[380px] max-w-full rounded-xl object-contain shadow-sm" /> 
-                :   <div className="w-full max-w-[400px] rounded-xl border border-[#DCEAF0] bg-white p-8 text-center">
-                        <FileText size={42} className="mx-auto text-[#00B0F0]" />
-                        <p className="mt-4 text-sm font-bold">Document preview</p>
-                        <p className="mt-2 text-xs leading-5 text-[#7891A0]">This mock PDF is ready to download. In production, the submitted file will render here.</p>
-                    </div>
+                preview.type === "image" ?
+                <img src={previewUrl(preview.url)} alt={preview.name} className="max-h-[380px] max-w-full rounded-xl object-contain shadow-sm" />
+                : <iframe src={previewUrl(preview.url)} title={`Preview of ${preview.name}`} className="h-[520px] w-full rounded-xl border border-[#DCEAF0] bg-white" />
                 }
             </div>
             <div className="flex justify-end border-t border-[#EAF1F4] px-5 py-4">

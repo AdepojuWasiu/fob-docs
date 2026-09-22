@@ -38,7 +38,7 @@ const SignIn = () => {
         const result = await response.json();
         if (!response.ok) throw new Error(result.message || "Unable to sign in");
         router.push("/admin");
-        router.refresh();
+        // router.refresh();
       } catch (error) {
         alert(error instanceof Error ? error.message : "Unable to sign in");
       } finally {
