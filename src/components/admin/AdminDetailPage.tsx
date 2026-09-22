@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import JSZip from "jszip";
 import { ArrowLeft, Download, Eye, FileArchive, FileText, Image as ImageIcon, X } from "lucide-react";
 import { AdminDocument, AdminRecord, RecordKind } from "@/lib/admin-data";
 import { getCompleteDocuments, getDetailSections } from "@/components/admin/AdminPages";
@@ -34,19 +33,21 @@ export default function AdminDetailPage({ kind, record }: { kind: RecordKind; re
 
   const downloadAll = async () => {
     setDownloading(true);
-    const zip = new JSZip();
-    for (const file of documents) {
-      const response = await fetch(file.url);
-      zip.file(file.name, await response.blob());
+    try {
+      const response = await fetch(`/api/admin/download/zip?submissionId=${encodeURIComponent(record.id)}`);
+      if (!response.ok) throw new Error("Unable to prepare ZIP download");
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `${record.name.replaceAll(" ", "-").toLowerCase()}-documents.zip`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Unable to download files");
+    } finally {
+      setDownloading(false);
     }
-    const blob = await zip.generateAsync({ type: "blob" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${record.name.replaceAll(" ", "-").toLowerCase()}-documents.zip`;
-    anchor.click();
-    URL.revokeObjectURL(url);
-    setDownloading(false);
   };
 
   return (

@@ -29,11 +29,21 @@ const SignIn = () => {
 
    const onSubmit = async (data: SignInValues) => {
       setLoading(true)
-      console.log(data)
-      setTimeout(()=>{
-          setLoading(false);
-          router.push("/admin")
-      }, 5000)
+      try {
+        const response = await fetch("/api/admin/auth/sign-in", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || "Unable to sign in");
+        router.push("/admin");
+        router.refresh();
+      } catch (error) {
+        alert(error instanceof Error ? error.message : "Unable to sign in");
+      } finally {
+        setLoading(false);
+      }
     }
   
   

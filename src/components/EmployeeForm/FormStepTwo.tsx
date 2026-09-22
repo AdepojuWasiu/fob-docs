@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Loader from "@/utils/Loader";
 import SuccessModal from "@/components/shared/SuccessModal";
 import {useEmployeeFormOneStore} from "@/store/useEmployeeStore"
+import { uploadEmployeeFiles } from "@/lib/employee-upload";
 
 
 interface FormStepTwoProps {
@@ -47,15 +48,152 @@ const FormStepTwo = ({ onPrevious }: FormStepTwoProps) => {
     },
   });
 
+  // const onSubmit = async (data: employeeFormTwoValues) => {
+  //   setLoading(true)
+  //   console.log(data)
+  //   console.log(formOne)
+  //   setTimeout(()=>{
+  //       setLoading(false);
+  //       setShowSuccessModal(true)
+  //   }, 8000)
+  // }
+
   const onSubmit = async (data: employeeFormTwoValues) => {
-    setLoading(true)
-    console.log(data)
-    console.log(formOne)
-    setTimeout(()=>{
-        setLoading(false);
-        setShowSuccessModal(true)
-    }, 8000)
+  setLoading(true);
+
+  let submissionId: string | null = null;
+  const {
+    picture,
+    academicCertificate,
+    nyscCertificate,
+    birthCertificate,
+    olevelCertificate,
+    validId,
+    otherDocuments,
+    ...formTwoFields
+  } = data;
+
+  try {
+    if (!formOne) {
+      throw new Error("Employee information is missing");
+    }
+
+    // 1. Create submission
+    const submissionResponse = await fetch(
+      "/api/submissions/employee",
+      {
+        method: "POST",
+      }
+    );
+
+    const submissionData = await submissionResponse.json();
+
+    if (!submissionResponse.ok) {
+      throw new Error(
+        submissionData.message ||
+          "Unable to create submission"
+      );
+    }
+
+    submissionId = submissionData.submissionId;
+
+    if (!submissionId) {
+      throw new Error("Unable to create employee submission");
+    }
+
+    // 2. Save employee information
+    const completeResponse = await fetch(
+      "/api/submissions/employee/complete",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          submissionId,
+          formOne,
+          formTwo: formTwoFields,
+        }),
+      }
+    );
+
+    const completeData = await completeResponse.json();
+
+    if (!completeResponse.ok) {
+      throw new Error(
+        completeData.message ||
+          "Unable to save employee information"
+      );
+    }
+
+    // 3. Upload files directly to R2
+    const uploadedFiles =
+      await uploadEmployeeFiles(
+        submissionId,
+        data
+      );
+
+    // 4. Tell server about uploaded files
+    const documentResponse = await fetch(
+      "/api/submissions/documents",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          submissionId,
+          documents: uploadedFiles,
+        }),
+      }
+    );
+
+    const documentData =
+      await documentResponse.json();
+
+    if (!documentResponse.ok) {
+      throw new Error(
+        documentData.message ||
+          "Unable to save documents"
+      );
+    }
+
+    // 5. Generate final PDF
+    const finalResponse = await fetch(
+      "/api/submissions/employee/finalize",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          submissionId,
+        }),
+      }
+    );
+
+    const finalData = await finalResponse.json();
+
+    if (!finalResponse.ok) {
+      throw new Error(
+        finalData.message ||
+          "Unable to finalize submission"
+      );
+    }
+
+    setShowSuccessModal(true);
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Something went wrong"
+    );
+  } finally {
+    setLoading(false);
   }
+};
 
    const sickness = [
     {label: "Cough", value: "cough"},

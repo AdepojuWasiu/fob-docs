@@ -1,4 +1,5 @@
 export type RecordKind = "employees" | "guarantors";
+export type SubmissionStatus = "DRAFT" | "UPLOADING" | "SUBMITTED" | "FAILED";
 
 export interface AdminDocument {
   id: string;
@@ -15,7 +16,8 @@ export interface AdminRecord {
   email: string;
   phone: string;
   location: string;
-  status: "Verified" | "Pending" | "Review";
+  status: SubmissionStatus;
+  failedReason?: string | null;
   submittedAt: string;
   role: string;
   department: string;
@@ -49,7 +51,7 @@ export const employees: AdminRecord[] = [
     email: "amina.yusuf@fob.ng",
     phone: "+234 803 445 1201",
     location: "Lagos",
-    status: "Verified",
+    status: "SUBMITTED",
     submittedAt: "Sep 12, 2026",
     role: "Senior Operations Analyst",
     department: "Corporate Services",
@@ -76,7 +78,7 @@ export const employees: AdminRecord[] = [
     email: "chinedu.okafor@fob.ng",
     phone: "+234 809 220 4345",
     location: "Abuja",
-    status: "Pending",
+    status: "DRAFT",
     submittedAt: "Sep 11, 2026",
     role: "Technology Specialist",
     department: "Technology",
@@ -102,7 +104,7 @@ export const employees: AdminRecord[] = [
     email: "tolu.adeyemi@fob.ng",
     phone: "+234 701 902 8830",
     location: "Ibadan",
-    status: "Review",
+    status: "FAILED",
     submittedAt: "Sep 09, 2026",
     role: "Finance Associate",
     department: "Finance",
@@ -128,7 +130,7 @@ export const employees: AdminRecord[] = [
     email: "fatima.bello@fob.ng",
     phone: "+234 806 720 1901",
     location: "Kano",
-    status: "Verified",
+    status: "SUBMITTED",
     submittedAt: "Sep 08, 2026",
     role: "Regulatory Officer",
     department: "Regulatory and Public Relations",
@@ -154,7 +156,7 @@ export const employees: AdminRecord[] = [
     email: "emeka.nwosu@fob.ng",
     phone: "+234 814 321 7700",
     location: "Enugu",
-    status: "Verified",
+    status: "SUBMITTED",
     submittedAt: "Sep 06, 2026",
     role: "Commercial Executive",
     department: "Commercial",
@@ -180,7 +182,7 @@ export const employees: AdminRecord[] = [
     email: "sade.ibrahim@fob.ng",
     phone: "+234 802 116 0455",
     location: "Lagos",
-    status: "Pending",
+    status: "DRAFT",
     submittedAt: "Sep 04, 2026",
     role: "People Experience Lead",
     department: "Corporate Services",
@@ -209,7 +211,7 @@ export const guarantors: AdminRecord[] = [
     email: "musa.abdullahi@gmail.com",
     phone: "+234 805 600 1208",
     location: "Lagos",
-    status: "Verified",
+    status: "SUBMITTED",
     submittedAt: "Sep 12, 2026",
     role: "Business owner",
     department: "For Amina Yusuf",
@@ -235,7 +237,7 @@ export const guarantors: AdminRecord[] = [
     email: "ngozi.eze@gmail.com",
     phone: "+234 803 114 9052",
     location: "Abuja",
-    status: "Pending",
+    status: "DRAFT",
     submittedAt: "Sep 11, 2026",
     role: "Civil servant",
     department: "For Chinedu Okafor",
@@ -261,7 +263,7 @@ export const guarantors: AdminRecord[] = [
     email: "kunle.adebayo@gmail.com",
     phone: "+234 706 440 2210",
     location: "Ibadan",
-    status: "Review",
+    status: "FAILED",
     submittedAt: "Sep 09, 2026",
     role: "Accountant",
     department: "For Tolu Adeyemi",
@@ -287,7 +289,7 @@ export const guarantors: AdminRecord[] = [
     email: "hauwa.garba@gmail.com",
     phone: "+234 809 801 3310",
     location: "Kano",
-    status: "Verified",
+    status: "SUBMITTED",
     submittedAt: "Sep 08, 2026",
     role: "School administrator",
     department: "For Fatima Bello",

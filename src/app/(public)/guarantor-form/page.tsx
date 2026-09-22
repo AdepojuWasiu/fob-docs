@@ -16,6 +16,7 @@ import type {guarantorFormValues} from "@/utils/validation/guarantorForm"
 import { zodResolver } from "@hookform/resolvers/zod";
 import Loader from "@/utils/Loader";
 import SuccessModal from "@/components/shared/SuccessModal"
+import { uploadGuarantorFiles } from "@/lib/guarantor-upload";
 
 
 const GuarantorForm = () => {
@@ -38,14 +39,134 @@ const GuarantorForm = () => {
     },
   });
 
-  const onSubmit = async (data: guarantorFormValues) => {
-    setLoading(true)
-    console.log(data)
-    setTimeout(()=>{
+  // const onSubmit = async (data: guarantorFormValues) => {
+  //   setLoading(true)
+  //   console.log(data)
+  //   setTimeout(()=>{
+  //       setLoading(false);
+  //       setShowSuccessModal(true)
+  //   }, 8000)
+  // }
+
+   const onSubmit = async (
+      data: guarantorFormValues
+    ) => {
+      setLoading(true);
+
+      try {
+        const { validID, picture, signature, ...guarantorFields } = data;
+
+        // 1. Create submission
+        const submissionResponse = await fetch(
+          "/api/submissions/guarantor",
+          {
+            method: "POST",
+          }
+        );
+
+        const submissionData =
+          await submissionResponse.json();
+
+        if (!submissionResponse.ok) {
+          throw new Error(
+            submissionData.message
+          );
+        }
+
+        const submissionId =
+          submissionData.submissionId;
+
+        // 2. Save guarantor information
+        const completeResponse = await fetch(
+          "/api/submissions/guarantor/complete",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              submissionId,
+              ...guarantorFields,
+            }),
+          }
+        );
+
+        const completeData =
+          await completeResponse.json();
+
+        if (!completeResponse.ok) {
+          throw new Error(
+            completeData.message
+          );
+        }
+
+        // 3. Upload files
+        const uploadedFiles =
+          await uploadGuarantorFiles(
+            submissionId,
+            data
+          );
+
+        // 4. Save documents
+        const documentResponse = await fetch(
+          "/api/submissions/documents",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              submissionId,
+              documents: uploadedFiles,
+            }),
+          }
+        );
+
+        const documentData =
+          await documentResponse.json();
+
+        if (!documentResponse.ok) {
+          throw new Error(
+            documentData.message
+          );
+        }
+
+        // 5. Generate PDF
+        const finalResponse = await fetch(
+          "/api/submissions/guarantor/finalize",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              submissionId,
+            }),
+          }
+        );
+
+        const finalData =
+          await finalResponse.json();
+
+        if (!finalResponse.ok) {
+          throw new Error(
+            finalData.message
+          );
+        }
+
+        setShowSuccessModal(true);
+      } catch (error) {
+        console.error(error);
+
+        alert(
+          error instanceof Error
+            ? error.message
+            : "Something went wrong"
+        );
+      } finally {
         setLoading(false);
-        setShowSuccessModal(true)
-    }, 8000)
-  }
+      }
+    };
 
   const stateOptions = State.getStatesOfCountry("NG").map((state)=> {
     return {

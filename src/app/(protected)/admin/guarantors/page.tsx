@@ -1,6 +1,6 @@
 import { RecordsPage } from "@/components/admin/AdminPages";
-import { guarantors } from "@/lib/admin-data";
+import { getAdminRecords } from "@/lib/admin-data-server";
 
-export default function GuarantorsPage() {
-  return <RecordsPage kind="guarantors" records={guarantors} />;
+export default async function GuarantorsPage() {
+  return <RecordsPage kind="guarantors" records={await getAdminRecords("guarantors")} />;
 }

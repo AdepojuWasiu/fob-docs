@@ -20,7 +20,14 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
 
   return (
     <div className="min-h-screen bg-[#F2F8FB] text-[#19334A]">
-      {mobileOpen && <button aria-label="Close navigation" className="fixed inset-0 z-30 bg-[#19334A]/30 lg:hidden" onClick={() => setMobileOpen(false)} />}
+      {
+        mobileOpen && 
+         <button 
+           aria-label="Close navigation" 
+           className="fixed inset-0 z-30 bg-[#19334A]/30 lg:hidden" 
+           onClick={() => setMobileOpen(false)} 
+          />
+      }
       <aside className={cn("fixed inset-y-0 left-0 z-40 flex w-[260px] flex-col border-r border-[#E0ECF2] bg-white px-5 py-6 transition-transform lg:translate-x-0", mobileOpen ? "translate-x-0" : "-translate-x-full")}>
         <div className="flex items-center justify-between px-2">
           <Link href="/admin" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
@@ -41,7 +48,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <p className="text-xs font-semibold">Document centre</p>
           <p className="mt-1 text-[11px] leading-5 text-[#7B92A3]">Keep every submission organised and ready for review.</p>
         </div>
-        <button className="mt-5 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-[#60798B] hover:bg-[#FFF4F2] hover:text-[#D65B4C]" onClick={() => router.push("/")}><LogOut size={18} />Log out</button>
+        <button className="mt-5 flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-[#60798B] hover:bg-[#FFF4F2] hover:text-[#D65B4C]" onClick={async () => { await fetch("/api/admin/auth/sign-out", { method: "POST" }); router.push("/admin/sign-in"); router.refresh(); }}><LogOut size={18} />Log out</button>
       </aside>
       <div className="lg:pl-[260px]">
         <header className="sticky top-0 z-20 flex h-[76px] items-center justify-between border-b border-[#E0ECF2] bg-[#F2F8FB]/90 px-5 backdrop-blur md:px-10">
@@ -49,7 +56,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <div className="hidden text-sm text-[#7B92A3] sm:block">FOB Docs <span className="mx-2 text-[#BCD0DA]">/</span> Admin</div>
           <div className="flex items-center gap-3"><div className="hidden text-right sm:block"><p className="text-xs font-semibold">Admin account</p><p className="text-[11px] text-[#7B92A3]">Operations team</p></div><div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#19334A] text-xs font-bold text-white">AD</div></div>
         </header>
-        <main className="mx-auto max-w-[1440px] px-5 py-7 md:px-10 md:py-10">{children}</main>
+        <main className="mx-auto max-w-[1440px] px-5 py-7 md:px-10 md:py-4">{children}</main>
       </div>
     </div>
   );

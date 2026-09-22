@@ -1,0 +1,197 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+
+enum SubmissionType {
+  EMPLOYEE
+  GUARANTOR
+}
+
+enum SubmissionStatus {
+  DRAFT
+  UPLOADING
+  SUBMITTED
+  FAILED
+}
+
+enum DocumentType {
+  EMPLOYEE_PICTURE
+  GUARANTOR_PICTURE
+
+  ACADEMIC_CERTIFICATE
+  NYSC_CERTIFICATE
+  BIRTH_CERTIFICATE
+  OLEVEL_CERTIFICATE
+  EMPLOYEE_VALID_ID
+  GUARANTOR_VALID_ID
+
+  SIGNATURE
+  OTHER_DOCUMENT
+
+  GENERATED_EMPLOYEE_PDF
+  GENERATED_GUARANTOR_PDF
+}
+
+enum DocumentStatus {
+  PENDING
+  UPLOADED
+  VERIFIED
+  FAILED
+}
+
+model Submission {
+  id        String           @id @default(cuid())
+  type      SubmissionType
+  status    SubmissionStatus @default(DRAFT)
+
+  employee  Employee?
+  guarantor Guarantor?
+
+  documents Document[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Employee {
+  id String @id @default(cuid())
+
+  submissionId String     @unique
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  firstName        String
+  lastName         String
+  middleName       String
+  dateOfBirth      String
+  gender           String
+  nin              String
+  jobTitle         String
+  employmentType   String
+  department       String
+  maritalStatus    String
+  nationality      String
+  stateOfOrigin    String
+
+  address String
+  state   String
+  lga     String
+  city    String
+
+  email          String
+  phoneNumber    String
+  phoneNumberTwo String?
+
+  kinFirstName      String
+  kinLastName       String
+  kinMiddleName     String
+  kinGender         String
+  kinAddress        String
+  kinRelationship   String
+  kinPhoneNumber    String
+  kinPhoneNumberTwo String?
+
+  pfaName       String?
+  pin           String?
+  tin           String?
+  accountHolder String?
+  bankName      String?
+  accountNumber String?
+  taxIdPin      String?
+
+  sickness String?
+
+  moneyCheckBox   Boolean @default(false)
+  sicknessCheckBox Boolean @default(false)
+  consentCheckBox Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Guarantor {
+  id String @id @default(cuid())
+
+  submissionId String     @unique
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  employeeName          String
+  employeeAddress       String
+  employeeGender        String
+  relationship          String
+  yearsOfRelationship   String
+
+  firstName    String
+  surname      String
+  otherName    String
+  dateOfBirth  String
+  guarGender   String
+  maritalStatus String
+  stateOfOrigin String
+
+  email          String
+  phoneNumber    String
+  phoneNumberTwo String?
+
+  occupation String
+
+  guarHomeAddress String
+  guarHomeState   String
+  guarHomeLga     String
+  guarHomeCity    String
+
+  guarOfficeAddress String
+  guarOfficeState   String
+  guarOfficeLga     String
+  guarOfficeCity    String
+
+  checkGuarantorBox Boolean @default(false)
+  signatureDate     String
+  consentCheckBox   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Document {
+  id String @id @default(cuid())
+
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  type DocumentType
+
+  fileName     String
+  originalName String
+  mimeType     String
+  size         Int
+
+  r2Key String
+  url   String?
+
+  status DocumentStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([submissionId, type, r2Key])
+  @@index([submissionId])
+  @@index([type])
+
+}
