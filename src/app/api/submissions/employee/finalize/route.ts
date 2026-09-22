@@ -5,20 +5,31 @@ import { getR2ObjectBuffer } from "@/lib/r2-download";
 import { uploadBufferToR2 } from "@/lib/r2-upload-server";
 import { generateEmployeePdf } from "@/lib/generate-employee-pdf";
 import { getR2Url } from "@/lib/r2";
+import { markSubmissionFailed } from "@/lib/mark-submission-failed";
 
 export async function POST(
   request: NextRequest
 ) {
   const createdKeys: string[] = [];
+  let submissionId: string | undefined;
 
   try {
-    const { submissionId } =
-      await request.json();
+    const body = await request.json();
+    submissionId = body.submissionId;
+
+    if (!submissionId) {
+      return NextResponse.json(
+        { success: false, message: "Submission ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const validSubmissionId = submissionId;
 
     const submission =
       await prisma.submission.findUnique({
         where: {
-          id: submissionId,
+          id: validSubmissionId,
         },
 
         include: {
@@ -111,7 +122,7 @@ export async function POST(
     await prisma.$transaction(async (tx) => {
       await tx.document.create({
         data: {
-          submissionId,
+          submissionId: validSubmissionId,
           type: "GENERATED_EMPLOYEE_PDF",
           fileName: "employee-biodata.pdf",
           originalName: "employee-biodata.pdf",
@@ -125,7 +136,7 @@ export async function POST(
 
       await tx.submission.update({
         where: {
-          id: submissionId,
+          id: validSubmissionId,
         },
         data: {
           status: "SUBMITTED",
@@ -141,6 +152,12 @@ export async function POST(
     console.error(
       "Finalize employee error:",
       error
+    );
+    await markSubmissionFailed(
+      submissionId,
+      error instanceof Error
+        ? error.message
+        : "Unable to finalize employee submission"
     );
 
     // Cleanup server-created R2 objects

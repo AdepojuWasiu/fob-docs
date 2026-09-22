@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { checkR2Object } from "@/lib/r2";
 import { FILE_RULES } from "@/lib/file-config";
 import { getR2Url } from "@/lib/r2";
+import { markSubmissionFailed } from "@/lib/mark-submission-failed";
 
 type UploadedDocument = {
   field: string;
@@ -14,17 +15,19 @@ type UploadedDocument = {
 
 export async function POST(request: NextRequest) {
   const createdKeys: string[] = [];
+  let submissionId: string | undefined;
 
   try {
     const body = await request.json();
 
     const {
-      submissionId,
+      submissionId: requestedSubmissionId,
       documents,
     }: {
       submissionId: string;
       documents: UploadedDocument[];
     } = body;
+    submissionId = requestedSubmissionId;
 
     const submission = await prisma.submission.findUnique({
       where: {
@@ -138,6 +141,10 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Save documents error:", error);
+    await markSubmissionFailed(
+      submissionId,
+      error instanceof Error ? error.message : "Unable to save documents"
+    );
 
     return NextResponse.json(
       {

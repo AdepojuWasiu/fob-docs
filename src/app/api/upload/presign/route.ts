@@ -7,6 +7,7 @@ import {
   FILE_RULES,
 } from "@/lib/file-config";
 import { randomUUID } from "crypto";
+import { markSubmissionFailed } from "@/lib/mark-submission-failed";
 
 type RequestedFile = {
   field: string;
@@ -16,16 +17,19 @@ type RequestedFile = {
 };
 
 export async function POST(request: NextRequest) {
+  let submissionId: string | undefined;
+
   try {
     const body = await request.json();
 
     const {
-      submissionId,
+      submissionId: requestedSubmissionId,
       files,
     }: {
       submissionId: string;
       files: RequestedFile[];
     } = body;
+    submissionId = requestedSubmissionId;
 
     if (!submissionId) {
       return NextResponse.json(
@@ -155,6 +159,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Presign error:", error);
+    await markSubmissionFailed(
+      submissionId,
+      error instanceof Error
+        ? error.message
+        : "Unable to generate upload URLs"
+    );
 
     return NextResponse.json(
       {

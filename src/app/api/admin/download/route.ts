@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
   if (!(await isAdminAuthenticated())) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   const submissionId = request.nextUrl.searchParams.get("submissionId");
   const documentId = request.nextUrl.searchParams.get("documentId");
+  const inline = request.nextUrl.searchParams.get("inline") === "1";
   if (!submissionId || !documentId) return NextResponse.json({ message: "Missing download parameters" }, { status: 400 });
   const document = await getSubmissionDocument(documentId, submissionId);
   if (!document) return NextResponse.json({ message: "Document not found" }, { status: 404 });
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest) {
     headers: {
       "Content-Type": document.mimeType,
       "Content-Length": String(buffer.length),
-      "Content-Disposition": `attachment; filename="${encodeURIComponent(document.originalName)}"`,
+      "Content-Disposition": `${inline ? "inline" : "attachment"}; filename="${encodeURIComponent(document.originalName)}"`,
       "Cache-Control": "private, no-store",
     },
   });

@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { guarantorFormSchema } from "@/utils/validation/guarantorForm";
 import { prisma } from "@/lib/prisma";
+import { markSubmissionFailed } from "@/lib/mark-submission-failed";
 
 export async function POST(request: NextRequest) {
+  let failedSubmissionId: unknown;
+
   try {
     const body = await request.json();
 
@@ -10,6 +13,7 @@ export async function POST(request: NextRequest) {
       submissionId,
       ...formData
     } = body;
+    failedSubmissionId = body.submissionId;
 
     const guarantorData = guarantorFormSchema
       .omit({
@@ -80,6 +84,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error(error);
+    await markSubmissionFailed(
+      failedSubmissionId,
+      error instanceof Error
+        ? error.message
+        : "Unable to save guarantor information"
+    );
 
     return NextResponse.json(
       {

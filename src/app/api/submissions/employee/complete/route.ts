@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { employeeFormOneSchema } from "@/utils/validation/employeeFormOne";
 import { employeeFormTwoSchema } from "@/utils/validation/employeeFormTwo";
+import { markSubmissionFailed } from "@/lib/mark-submission-failed";
 
 export async function POST(request: NextRequest) {
+  let failedSubmissionId: unknown;
+
   try {
     const body = await request.json();
 
@@ -12,6 +15,7 @@ export async function POST(request: NextRequest) {
       formOne,
       formTwo,
     } = body;
+    failedSubmissionId = body.submissionId;
 
     if (!submissionId) {
       return NextResponse.json(
@@ -111,6 +115,12 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error(error);
+    await markSubmissionFailed(
+      failedSubmissionId,
+      error instanceof Error
+        ? error.message
+        : "Unable to save employee information"
+    );
 
     return NextResponse.json(
       {

@@ -304,7 +304,7 @@ const GuarantorForm = () => {
                  <FileInput
                   label="Upload Picture"
                   required
-                  accept=".jpg,.jpeg,.png,.pdf"
+                  accept=".jpg,.jpeg,.png"
                   multiple={false} 
                   description= "Guarantor's Passport Size Photo"
                   onFilesChange={(files) => setValue("picture", files, { shouldValidate: true })}
